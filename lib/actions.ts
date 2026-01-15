@@ -9,14 +9,25 @@ type Time = {
 
 export async function submitTimeEntry(data: { hours: number; minutes: number; date: Date; note?: string }) {
 	// Here you would handle the submitted data, e.g., save it to a database.
-	console.log("Time Entry Submitted:", data);
 	const totalMinutes = hoursToMinutes(data.hours) + data.minutes;
-	const result = query("INSERT INTO hfg_time_tracker (minutes, entry_date, notes) VALUES ($1, $2, $3)", [
+	const result = query(`INSERT INTO ${process.env.DB_TABLE!} (minutes, entry_date, notes) VALUES ($1, $2, $3)`, [
 		totalMinutes,
 		data.date,
 		data.note ?? null,
 	]);
 	console.log("Database Insert Result:", result);
+}
+
+export async function getTimeEntries() {
+	const result = await query(
+		`SELECT id, minutes, entry_date, notes FROM ${process.env.DB_TABLE!} ORDER BY entry_date DESC`
+	);
+	return result.rows.map((row) => ({
+		id: row.id,
+		time: minutesToHours(row.minutes),
+		date: row.entry_date,
+		note: row.notes,
+	}));
 }
 
 function hoursToMinutes(hours: number): number {

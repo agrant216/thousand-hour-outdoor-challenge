@@ -1,14 +1,13 @@
 "use client";
 
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import NumberFieldInput from "./ui/numberfield";
+import NumberFieldInput from "../ui/numberfield";
 import { useState } from "react";
-import DatePicker from "./ui/date-picker";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
-import { Field, FieldGroup, FieldLabel } from "./ui/field";
+import DatePicker from "../ui/date-picker";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { submitTimeEntry } from "@/lib/actions";
-import { FieldInputContext } from "react-aria-components";
 
 interface IFormInput {
 	hours: number;
@@ -37,12 +36,11 @@ export default function SubmitTimeForm() {
 	}
 
 	return (
-		<Card className="w-full sm:max-w-md">
+		<Card className="w-full m-4 sm:max-w-sm">
 			<CardHeader>
 				<CardTitle>Time Entry</CardTitle>
 				<CardDescription>Log your outdoor time today</CardDescription>
 			</CardHeader>
-			{/* <h3 className="block text-left text-lg font-medium">Log your outdoor time today:</h3> */}
 			<CardContent>
 				<FormProvider {...form}>
 					<form id="time-entry" onSubmit={form.handleSubmit(onSubmit)}>
