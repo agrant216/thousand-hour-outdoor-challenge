@@ -1,5 +1,6 @@
 "use server";
 
+import { cacheTag, updateTag } from "next/cache";
 import { query } from "./db";
 
 type Time = {
@@ -16,6 +17,7 @@ export async function submitTimeEntry(data: { hours: number; minutes: number; da
 		data.note ?? null,
 	]);
 	console.log("Database Insert Result:", result);
+	updateTag("dashboard-data");
 }
 
 export async function getTimeEntries() {
@@ -28,6 +30,61 @@ export async function getTimeEntries() {
 		date: row.entry_date,
 		note: row.notes,
 	}));
+}
+
+export async function getCurrentWeekTimeEntries() {
+	const result = await query(
+		`SELECT date_trunc('day', entry_date)::date AS weekday, SUM(minutes) AS total_minutes FROM ${process.env
+			.DB_TABLE!} WHERE entry_date >= date_trunc('week', CURRENT_DATE) GROUP BY weekday ORDER BY weekday`
+	);
+	return result.rows.map((row) => {
+		return {
+			date: row.weekday,
+			time: minutesToHours(row.total_minutes),
+		};
+	});
+}
+
+export async function getCurrentWeekTotal() {
+	"use cache";
+	cacheTag("dashboard-data");
+	const result = await query(
+		`SELECT SUM(minutes) AS total_minutes FROM ${process.env
+			.DB_TABLE!} WHERE entry_date >= date_trunc('week', CURRENT_DATE)`
+	);
+	const totalMinutes = result.rows[0]?.total_minutes ?? 0;
+	return minutesToHours(totalMinutes);
+}
+
+export async function getPreviousWeektotal() {
+	"use cache";
+	const result = await query(
+		`SELECT SUM(minutes) AS total_minutes FROM ${process.env
+			.DB_TABLE!} WHERE entry_date >= date_trunc('week', CURRENT_DATE) - INTERVAL '7 days' AND entry_date < date_trunc('week', CURRENT_DATE)`
+	);
+	const totalMinutes = result.rows[0]?.total_minutes ?? 0;
+	return minutesToHours(totalMinutes);
+}
+
+export async function getCurrentMonthTotal() {
+	"use cache";
+	cacheTag("dashboard-data");
+	const result = await query(
+		`SELECT SUM(minutes) AS total_minutes FROM ${process.env
+			.DB_TABLE!} WHERE entry_date >= date_trunc('month', CURRENT_DATE)`
+	);
+	const totalMinutes = result.rows[0]?.total_minutes ?? 0;
+	return minutesToHours(totalMinutes);
+}
+
+export async function getPreviousMonthTotal() {
+	"use cache";
+	const result = await query(
+		`SELECT SUM(minutes) AS total_minutes FROM ${process.env
+			.DB_TABLE!} WHERE entry_date >= date_trunc('month', CURRENT_DATE) - INTERVAL '1 month' AND entry_date < date_trunc('month', CURRENT_DATE)`
+	);
+	const totalMinutes = result.rows[0]?.total_minutes ?? 0;
+	return minutesToHours(totalMinutes);
 }
 
 function hoursToMinutes(hours: number): number {

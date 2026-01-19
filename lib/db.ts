@@ -22,11 +22,9 @@ pool.on("error", (err) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function query<T extends QueryResult = any>(text: string, params?: any[]): Promise<QueryResult<T>> {
-	const start = Date.now();
 	try {
 		const result = await pool.query<T>(text, params);
-		const duration = Date.now() - start;
-		console.log("Executed query", { text, duration, rows: result.rowCount });
+		console.log("Executed query", { text, rows: result.rowCount });
 		return result;
 	} catch (error) {
 		console.error("Database query error", error);

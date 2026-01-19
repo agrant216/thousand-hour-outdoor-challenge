@@ -19,6 +19,7 @@ export function DatePicker() {
 	const { field } = useController({
 		name: "date",
 		control: methods.control,
+		defaultValue: new Date(),
 	});
 	const selectedDate = field.value as Date | undefined;
 

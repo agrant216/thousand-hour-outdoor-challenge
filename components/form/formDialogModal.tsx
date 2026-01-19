@@ -31,7 +31,6 @@ export default function FormDialogModal() {
 		defaultValues: {
 			hours: 0,
 			minutes: 0,
-			date: new Date(),
 			note: "",
 		},
 	});
@@ -108,4 +107,3 @@ export default function FormDialogModal() {
 		</Dialog>
 	);
 }
-
