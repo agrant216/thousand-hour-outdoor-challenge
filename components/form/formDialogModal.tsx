@@ -16,6 +16,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import NumberFieldInput from "../ui/numberfield";
 import DatePicker from "../ui/date-picker";
+import SuccessDialog from "./successDialog";
 
 interface IFormInput {
 	hours: number;
@@ -26,6 +27,8 @@ interface IFormInput {
 
 export default function FormDialogModal() {
 	const [shouldShowNotes, setShouldShowNotes] = useState(false);
+	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	const form = useForm<IFormInput>({
 		defaultValues: {
@@ -35,15 +38,31 @@ export default function FormDialogModal() {
 		},
 	});
 
-	function onSubmit(data: IFormInput) {
+	async function onSubmit(data: IFormInput) {
 		// Do something with the form values.
 		console.log(data);
-		submitTimeEntry(data);
+		setIsSubmitted(true);
+		await submitTimeEntry(data);
 		form.reset();
 	}
 
+	const handleOpenChange = (open: boolean) => {
+		setIsOpen(open);
+		if (!open) {
+			setTimeout(() => {
+				setIsSubmitted(false);
+				form.reset();
+			}, 300); // Delay reset until after close animation
+		}
+	};
+
+	const handleAddAnotherEntry = () => {
+		setIsSubmitted(false);
+		form.reset();
+	};
+
 	return (
-		<Dialog>
+		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
 				<Button variant="outline" className="fixed bottom-5 right-5 rounded-full shadow-lg z-50" size="lg">
 					<ClockPlus />
@@ -56,53 +75,68 @@ export default function FormDialogModal() {
 					<DialogTitle>Time Entry</DialogTitle>
 					<DialogDescription>Log your outdoor time today</DialogDescription>
 				</DialogHeader>
-				<FormProvider {...form}>
-					<form id="time-entry" onSubmit={form.handleSubmit(onSubmit)}>
-						<FieldGroup className="gap-5">
-							<Field orientation="vertical">
-								<FieldLabel>Time</FieldLabel>
-								<Field orientation="responsive">
-									<NumberFieldInput name="hours" size="lg" unit="hour" />
-									<NumberFieldInput name="minutes" size="lg" unit="minute" />
+				{isSubmitted ? (
+					<SuccessDialog
+						isLoading={form.formState.isSubmitting}
+						onClose={() => handleOpenChange(false)}
+						onAddEntry={() => handleAddAnotherEntry()}
+					/>
+				) : (
+					<FormProvider {...form}>
+						<form id="time-entry" onSubmit={form.handleSubmit(onSubmit)}>
+							<FieldGroup className="gap-5">
+								<Field orientation="vertical">
+									<FieldLabel>Time</FieldLabel>
+									<Field orientation="responsive">
+										<NumberFieldInput name="hours" size="lg" unit="hour" />
+										<NumberFieldInput name="minutes" size="lg" unit="minute" />
+									</Field>
 								</Field>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="date">Date</FieldLabel>
-								<DatePicker />
-							</Field>
-							<Field>
-								{!shouldShowNotes && (
-									<Button
-										className="w-full"
-										type="button"
-										variant="outline"
-										onClick={() => setShouldShowNotes(!shouldShowNotes)}
-									>
-										Add Note
-									</Button>
-								)}
-								{shouldShowNotes && (
-									<textarea
-										aria-label="note"
-										{...form.register("note")}
-										className="cn-textarea field-sizing-content min-h-16 mt-2 w-full p-2 border rounded-lg"
-										placeholder="Add a note..."
-									/>
-								)}
-							</Field>
-						</FieldGroup>
-					</form>
-				</FormProvider>
-				<DialogFooter>
-					<Field orientation="horizontal">
-						<Button type="button" form="time-entry" variant="outline" onClick={() => form.reset()}>
-							Clear
-						</Button>
-						<Button type="submit" form="time-entry" variant="default">
-							Submit
-						</Button>
-					</Field>
-				</DialogFooter>
+								<Field>
+									<FieldLabel htmlFor="date">Date</FieldLabel>
+									<DatePicker />
+								</Field>
+								<Field>
+									{!shouldShowNotes && (
+										<Button
+											className="w-full"
+											type="button"
+											variant="outline"
+											onClick={() => setShouldShowNotes(!shouldShowNotes)}
+										>
+											Add Note
+										</Button>
+									)}
+									{shouldShowNotes && (
+										<textarea
+											aria-label="note"
+											{...form.register("note")}
+											className="cn-textarea field-sizing-content min-h-16 mt-2 w-full p-2 border rounded-lg"
+											placeholder="Add a note..."
+										/>
+									)}
+								</Field>
+							</FieldGroup>
+						</form>
+					</FormProvider>
+				)}
+				{!isSubmitted && (
+					<DialogFooter>
+						<Field orientation="horizontal">
+							<Button type="button" form="time-entry" variant="outline" onClick={() => form.reset()}>
+								Clear
+							</Button>
+							<Button
+								type="submit"
+								form="time-entry"
+								variant="default"
+								disabled={form.formState.isSubmitting}
+							>
+								{form.formState.isSubmitting ? "Sending..." : "Submit"}
+							</Button>
+						</Field>
+					</DialogFooter>
+				)}
 			</DialogContent>
 		</Dialog>
 	);

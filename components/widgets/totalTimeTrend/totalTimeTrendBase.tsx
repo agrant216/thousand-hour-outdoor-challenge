@@ -18,7 +18,7 @@ function getTrendText(percentage: number, mode: "week" | "month"): React.JSX.Ele
 	let trendIcon = <></>;
 	const trendPercentage = (
 		<>
-			{percentage > 0 ? "+" : "-"}
+			{percentage > 0 ? "+" : ""}
 			{percentage.toFixed(1)}%
 		</>
 	);
@@ -60,7 +60,7 @@ export default async function TotalTimeTrendBase(props: Props) {
 	const percentage = ((currentMinutes - previousMinutes) / previousMinutes) * 100;
 
 	return (
-		<Card className="gap-4 max-w-[45%] min-w-48">
+		<Card className="gap-4 max-w-full xs:max-w-[45%] min-w-48">
 			<CardHeader>
 				<CardDescription>
 					Total Time this <span className="capitalize">{props.range}</span>
