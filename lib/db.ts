@@ -5,6 +5,12 @@ declare global {
 	var __pg_pool__: Pool | undefined;
 }
 
+if (!process.env.DATABASE_URL) {
+	throw new Error(
+		"DATABASE_URL environment variable is required but not set. This is needed for database operations.",
+	);
+}
+
 const pool =
 	global.__pg_pool__ ??
 	new Pool({

@@ -27,13 +27,14 @@ export function DatePicker() {
 		<div className="flex flex-col gap-3">
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
-					<Button variant="outline" id="date">
+					<Button className="min-h-13 text-xl" variant="outline" id="date">
 						{selectedDate && dateIsToday(selectedDate) ? "Today" : selectedDate?.toLocaleDateString()}
 						<ChevronDownIcon />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-auto overflow-hidden p-0" align="start">
+				<PopoverContent className="w-325px overflow-hidden p-0" align="center">
 					<Calendar
+						className="w-full"
 						mode="single"
 						selected={selectedDate}
 						captionLayout="dropdown"

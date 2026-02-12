@@ -17,6 +17,7 @@ import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import NumberFieldInput from "../ui/numberfield";
 import DatePicker from "../ui/date-picker";
 import SuccessDialog from "./successDialog";
+import { TimePicker } from "../ui/time-picker";
 
 interface IFormInput {
 	hours: number;
@@ -64,13 +65,17 @@ export default function FormDialogModal() {
 	return (
 		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="fixed bottom-5 right-5 rounded-full shadow-lg z-50" size="lg">
-					<ClockPlus />
+				<Button
+					variant="outline"
+					className="fixed bottom-5 right-5 rounded-full shadow-lg z-50 min-h-13 text-md"
+					size="lg"
+				>
+					<ClockPlus size={48} />
 					Add Time
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent>
+			<DialogContent className="h-screen min-w-screen md:h-auto md:min-w-auto md:max-w-md">
 				<DialogHeader className="text-left">
 					<DialogTitle>Time Entry</DialogTitle>
 					<DialogDescription>Log your outdoor time today</DialogDescription>
@@ -88,6 +93,7 @@ export default function FormDialogModal() {
 								<Field orientation="vertical">
 									<FieldLabel>Time</FieldLabel>
 									<Field orientation="responsive">
+										<TimePicker />
 										<NumberFieldInput name="hours" size="lg" unit="hour" />
 										<NumberFieldInput name="minutes" size="lg" unit="minute" />
 									</Field>
@@ -99,7 +105,7 @@ export default function FormDialogModal() {
 								<Field>
 									{!shouldShowNotes && (
 										<Button
-											className="w-full"
+											className="w-full min-h-12 text-xl"
 											type="button"
 											variant="outline"
 											onClick={() => setShouldShowNotes(!shouldShowNotes)}

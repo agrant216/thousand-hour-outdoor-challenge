@@ -11,7 +11,7 @@ type Props = {
 
 export default function SuccessDialog(props: Props) {
 	return (
-		<div className="flex flex-col items-center justify-center space-y-4 py-8 text-center min-h-70.5">
+		<div className="flex h-96 flex-col items-center justify-center space-y-4 text-center">
 			{props.isLoading ? (
 				<LoaderCircleIcon className="h-12 w-12 text-gray-500 animate-spin" />
 			) : (
