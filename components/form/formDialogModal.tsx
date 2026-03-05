@@ -94,8 +94,8 @@ export default function FormDialogModal() {
 									<FieldLabel>Time</FieldLabel>
 									<Field orientation="responsive">
 										<TimePicker />
-										<NumberFieldInput name="hours" size="lg" unit="hour" />
-										<NumberFieldInput name="minutes" size="lg" unit="minute" />
+										{/* <NumberFieldInput name="hours" size="lg" unit="hour" />
+										<NumberFieldInput name="minutes" size="lg" unit="minute" /> */}
 									</Field>
 								</Field>
 								<Field>

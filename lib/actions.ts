@@ -2,11 +2,7 @@
 
 import { cacheTag, updateTag } from "next/cache";
 import { query } from "./db";
-
-type Time = {
-	hours: number;
-	minutes: number;
-};
+import { minutesToHours } from "./dateTimeHelpers";
 
 export async function submitTimeEntry(data: { hours: number; minutes: number; date: Date; note?: string }) {
 	// Here you would handle the submitted data, e.g., save it to a database.
@@ -87,11 +83,14 @@ export async function getPreviousMonthTotal() {
 	return minutesToHours(totalMinutes);
 }
 
+export async function getTotalTime() {
+	"use cache";
+	cacheTag("dashboard-data");
+	const result = await query(`SELECT SUM(minutes) AS total_minutes FROM ${process.env.DB_TABLE!}`, []);
+	const totalMinutes = result.rows[0]?.total_minutes ?? 0;
+	return minutesToHours(totalMinutes);
+}
+
 function hoursToMinutes(hours: number): number {
 	return hours * 60;
 }
-
-function minutesToHours(minutes: number): Time {
-	return { hours: Math.floor(minutes / 60), minutes: minutes % 60 };
-}
-

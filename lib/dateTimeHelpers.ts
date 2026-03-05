@@ -1,3 +1,8 @@
+type Time = {
+	hours: number;
+	minutes: number;
+};
+
 export function getWeekDates(): Date[] {
 	const today = new Date();
 	const dayOfWeek = today.getDay(); // Sunday is 0, Monday is 1, etc.
@@ -17,3 +22,6 @@ export function getWeekDates(): Date[] {
 	return dates;
 }
 
+export function minutesToHours(minutes: number): Time {
+	return { hours: Math.floor(minutes / 60), minutes: minutes % 60 };
+}
