@@ -91,6 +91,24 @@ export async function getTotalTime() {
 	return minutesToHours(totalMinutes);
 }
 
+export async function getRecentTimeEntries() {
+	"use cache";
+	cacheTag("dashboard-data");
+    const result = await query(
+        `SELECT minutes, entry_date, notes
+         FROM ${process.env.DB_TABLE!}
+         ORDER BY entry_date DESC
+         LIMIT 5`,
+        [],
+    );
+
+    return result.rows.map((row) => ({
+        time: minutesToHours(row.minutes),
+        date: row.entry_date,
+        note: row.notes,
+    }));
+}
+
 function hoursToMinutes(hours: number): number {
 	return hours * 60;
 }

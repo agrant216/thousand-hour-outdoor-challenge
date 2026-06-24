@@ -1,7 +1,3 @@
-type Time = {
-	hours: number;
-	minutes: number;
-};
 
 export function getWeekDates(): Date[] {
 	const today = new Date();
