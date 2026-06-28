@@ -60,7 +60,7 @@ export default async function TimeTrendBase(props: Props) {
 	const percentage = ((currentMinutes - previousMinutes) / previousMinutes) * 100;
 
 	return (
-		<Card className="gap-4 max-w-full xs:max-w-[45%] min-w-47">
+		<Card className="w-full gap-4">
 			<CardHeader>
 				<CardDescription>
 					Total Time this <span className="capitalize">{props.range}</span>

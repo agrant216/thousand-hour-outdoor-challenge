@@ -3,6 +3,7 @@
 import { cacheTag, updateTag } from "next/cache";
 import { query } from "./db";
 import { minutesToHours } from "./dateTimeHelpers";
+import { TimeEntryCursor } from "./types";
 
 export async function submitTimeEntry(data: { hours: number; minutes: number; date: Date; note?: string }) {
 	// Here you would handle the submitted data, e.g., save it to a database.
@@ -107,6 +108,55 @@ export async function getRecentTimeEntries() {
         date: row.entry_date,
         note: row.notes,
     }));
+}
+
+export async function getAllTimeEntries(input?: {
+  limit?: number;
+  cursor?: TimeEntryCursor | null;
+}) {
+  const limit = Math.min(Math.max(input?.limit ?? 25, 1), 100);
+  const cursor = input?.cursor ?? null;
+
+  const params: Array<string | number> = [];
+  let whereSql = "";
+
+  if (cursor) {
+    params.push(cursor.entryDate, cursor.id);
+    whereSql = "WHERE (entry_date, id) < ($1::timestamptz, $2::int)";
+  }
+
+  params.push(limit + 1);
+  const limitParam = "$" + params.length;
+
+  const result = await query(
+    "SELECT id, minutes, entry_date, notes " +
+      "FROM " + process.env.DB_TABLE! + " " +
+      whereSql + " " +
+      "ORDER BY entry_date DESC, id DESC " +
+      "LIMIT " + limitParam,
+    params
+  );
+
+  const rows = result.rows.map((row) => ({
+    id: row.id as number,
+    time: minutesToHours(row.minutes as number),
+    date:
+      row.entry_date instanceof Date
+        ? row.entry_date.toISOString()
+        : new Date(row.entry_date).toISOString(),
+    note: row.notes ?? "",
+  }));
+
+  const hasMore = rows.length > limit;
+  const items = hasMore ? rows.slice(0, limit) : rows;
+  const last = items[items.length - 1];
+
+  return {
+    items,
+    nextCursor: hasMore && last
+      ? { entryDate: last.date, id: last.id }
+      : null,
+  };
 }
 
 function hoursToMinutes(hours: number): number {

@@ -5,7 +5,7 @@ import TotalTimeToGoal from "./totalTimeToGoal";
 
 export default async function Dashboard() {
 	return (
-		<div className="grid mx-3 justify-items-center-safe gap-3 mt-35 grid-cols-1 xs:grid-cols-2 xs:gap-1 md:grid-cols-3">
+		<div className="grid mx-3 mt-35 grid-cols-1 gap-y-2 xs:grid-cols-2 xs:gap-x-2 xs:gap-y-3 md:grid-cols-3 md:gap-x-2 md:gap-y-3">
 			<TotalTimeToGoal />
 			<TimeTrendWeek />
 			<TimeTrendMonth />

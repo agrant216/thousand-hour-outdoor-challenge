@@ -1,3 +1,4 @@
+import { Time } from "./types";
 
 export function getWeekDates(): Date[] {
 	const today = new Date();

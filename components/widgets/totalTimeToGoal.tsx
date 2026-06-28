@@ -44,7 +44,7 @@ export default async function TotalTimeToGoal() {
     }
 
     return (
-        <Card className="gap-4 col-span-1 max-w-full xs:max-w-[45%] min-w-48 xs:col-span-2 xs:min-w-96">
+        <Card className="gap-4 col-span-1 w-full xs:col-span-2">
 			<CardHeader>
 				<CardDescription>
 					Total Time this Year
